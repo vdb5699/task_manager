@@ -37,7 +37,6 @@ class GUI:
         self.done_frame.pack(side=tk.RIGHT, expand=True)
 
     def on_button_click(self):
-
         user_input = self.entry.get()
         try:
             self.validate_input(user_input)
@@ -68,22 +67,25 @@ class GUI:
         self.task_widgets[task] = (task_var, checkbox, label, task_frame)
 
     def update_task_status(self, var, task, task_frame):
-        task_var, checkbox, label, _ = self.task_widgets[task]
-
         if var.get():
             self.task_array.remove(task)
             self.done_array.append(task)
-            self.add_task_widget(task, self.done_frame, True)
         else:
             self.done_array.remove(task)
             self.task_array.append(task)
-            self.add_task_widget(task, self.task_frame, False)
 
-        task_frame.destroy()  # Remove the old widget from the frame
+        # Destroy the old task frame
+        task_frame.destroy()
+
+        # Recreate the task widget in the appropriate frame
+        if var.get():
+            self.add_task_widget(task, self.done_frame, True)
+        else:
+            self.add_task_widget(task, self.task_frame, False)
 
     @staticmethod
     def validate_input(user_input):
-        if not user_input or user_input != " " or user_input != "  ":
+        if not user_input:  # or user_input != " " or user_input != "  "
             raise InvalidTaskInput("Task cannot be empty or only spaces!")
 
 
