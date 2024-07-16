@@ -48,6 +48,7 @@ class GUI:
             self.entry.delete(0, tk.END)  # Clear the entry widget after adding the task
         except InvalidTaskInput as e:
             messagebox.showerror("Invalid Input", str(e))
+        self.entry.delete(0, tk.END)
 
     def add_task_widget(self, task, frame, done):
         task_var = tk.BooleanVar(value=done)
