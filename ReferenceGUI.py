@@ -32,15 +32,25 @@ class GUI:
         self.task_frame = tk.Frame(self.root)
         self.task_frame.pack(side=tk.LEFT, expand=True)
 
+        # Create a label for this task_frame
+        self.task_frame_label = tk.Label(self.root, text="TO DO")
+        self.task_frame_label.pack(side=tk.LEFT, expand=True)
+
+
+
         # Frame to hold completed tasks
         self.done_frame = tk.Frame(self.root)
-        self.done_frame.pack(side=tk.RIGHT, expand=True)
+        self.task_frame_label.pack(side=tk.RIGHT, expand=True)
+
+        # Create a label for this done_frame
+        self.done_frame_label = tk.Label(self.root, text="COMPLETED")
+        self.task_frame_label.pack()
 
     def on_button_click(self):
         user_input = self.entry.get()
         try:
             self.validate_input(user_input)
-            task = f"{self.counter}) {user_input}"
+            task = f"{user_input}"
             self.task_array.append(task)
             self.add_task_widget(task, self.task_frame, False)
             self.label.config(text=f"Tasks Added: {self.counter}")
@@ -51,21 +61,27 @@ class GUI:
         self.entry.delete(0, tk.END)
 
     def add_task_widget(self, task, frame, done):
-        task_var = tk.BooleanVar(value=done)
-        checkbox = tk.Checkbutton(frame, variable=task_var)
-        label = tk.Label(frame, text=task)
-
-        if done:
-            label.config(fg="grey", text=task + " (Done)")
-        checkbox.pack(side="left")
-        label.pack(side="left")
-
         task_frame = tk.Frame(frame)
         task_frame.pack(fill="x")
 
-        checkbox.config(command=lambda: self.update_task_status(task_var, task, task_frame))
+        task_var = tk.BooleanVar(value=done)
+        checkbox = tk.Checkbutton(task_frame, variable=task_var,
+                                  command=lambda: self.on_checkbox_click(task_var, task, task_frame))
+        checkbox.pack(side="left")
+
+        label_text = f"{task} (Done)" if done else task
+        label = tk.Label(task_frame, text=label_text)
+        label.pack(side="left")
 
         self.task_widgets[task] = (task_var, checkbox, label, task_frame)
+
+    def on_checkbox_click(self, var, task, task_frame):
+        if var.get():
+            print(f"Task '{task}' completed.")
+        else:
+            print(f"Task '{task}' not completed.")
+
+        self.update_task_status(var, task, task_frame)
 
     def update_task_status(self, var, task, task_frame):
         if var.get():
